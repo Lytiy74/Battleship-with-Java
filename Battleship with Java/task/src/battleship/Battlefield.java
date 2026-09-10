@@ -32,16 +32,37 @@ public class Battlefield {
         Coordinate c1 = new Coordinate(firstCoord);
         Coordinate c2 = new Coordinate(secondCoord);
 
+        if (!isValidCoordinates(c1, c2)) {
+            System.out.println("Error!");
+            return;
+        }
+
         int startRow = Math.min(c1.getRow(), c2.getRow());
         int endRow = Math.max(c1.getRow(), c2.getRow());
         int startCol = Math.min(c1.getCol(), c2.getCol());
         int endCol = Math.max(c1.getCol(), c2.getCol());
 
+
+        int length = (endRow - startRow + endCol - startCol) + 1;
+        System.out.printf("Length: %d\n", length);
+
+        StringBuilder sb = new StringBuilder("Parts: ");
         for (int r = startRow; r <= endRow; r++) {
+            char letter = (char) ('A' + r);
             for (int c = startCol; c <= endCol; c++) {
+                sb.append(letter).append(c+1).append(" ");
                 field[r][c] = PLAYER_SHIP_SYMBOL;
             }
         }
+
+        System.out.println(sb);
+    }
+
+    private boolean isValidCoordinates(Coordinate c1, Coordinate c2) {
+        if (c1.getRow() < 0 || c1.getCol() < 0 || c2.getRow() < 0 || c2.getCol() < 0) return false;
+        if (c1.getRow() >= height || c1.getCol() >= width || c2.getRow() >= height || c2.getCol() >= width) return false;
+        if(!(c1.getRow() == c2.getRow() || c1.getCol() == c2.getCol())) return false;
+        return true;
     }
 
     @Override
@@ -58,7 +79,7 @@ public class Battlefield {
         sb.append("\n");
 
         for (int i = 0; i < height; i++) {
-            char letter = (char)( 'A' + i);
+            char letter = (char) ('A' + i);
             sb.append(letter).append(" ");
             for (int j = 0; j < width; j++) {
                 sb.append(field[i][j]).append(" ");
