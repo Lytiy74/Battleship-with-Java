@@ -3,6 +3,9 @@ package battleship;
 public class Main {
 
     public static void main(String[] args) {
-        System.out.println("Hello World!");
+        Battlefield battlefield = new Battlefield();
+
+        battlefield.placeShipOnField("A1", "A4");
+        System.out.println(battlefield.toString());
     }
 }
