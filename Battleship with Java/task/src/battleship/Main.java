@@ -6,7 +6,6 @@ public class Main {
 
     public static void main(String[] args) {
         Battlefield battlefield = new Battlefield();
-        battlefield.toString();
         Scanner scanner = new Scanner(System.in);
         System.out.println(battlefield.toString());
         System.out.println("Enter the coordinates of the ship:");
