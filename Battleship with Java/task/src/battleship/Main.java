@@ -3,11 +3,12 @@ package battleship;
 import java.util.Scanner;
 
 public class Main {
+    private static boolean hideShips = false;
 
     public static void main(String[] args) {
         Battlefield battlefield = new Battlefield();
         Scanner scanner = new Scanner(System.in);
-        System.out.println(battlefield);
+        System.out.println(battlefield.toString(hideShips));
 
         for (ShipTypes ship : ShipTypes.values()) {
             System.out.printf("Enter the coordinates of the %s (%d cells)\n", ship.getName(), ship.getSize());
@@ -29,9 +30,10 @@ public class Main {
         }
 
         System.out.println("The game starts!\n");
+        hideShips = true;
 
-        ShootResult shootResult = ShootResult.MISS;
-        System.out.println(battlefield);
+        ShootResult shootResult;
+        System.out.println(battlefield.toString(hideShips));
         System.out.println("Take a shot!\n");
         while (true) {
             try {
@@ -41,12 +43,14 @@ public class Main {
                 System.out.println(e.getMessage());
             }
         }
-        System.out.println(battlefield);
+        System.out.println(battlefield.toString(hideShips));
         if (shootResult == ShootResult.MISS) {
             System.out.println("You missed!");
         } else {
             System.out.println("You hit a ship!");
         }
 
+        hideShips = false;
+        System.out.println(battlefield.toString(hideShips));
     }
 }

@@ -130,4 +130,32 @@ public class Battlefield {
         }
         return sb.toString();
     }
+
+    public String toString(boolean hideShips) {
+        if (!hideShips) return toString();
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(" ");
+
+        for (int i = 0; i < width; i++) {
+            sb.append(i + 1)
+                    .append(" ");
+        }
+
+        sb.append("\n");
+
+        for (int i = 0; i < height; i++) {
+            char letter = (char) ('A' + i);
+            sb.append(letter).append(" ");
+            for (int j = 0; j < width; j++) {
+                char fieldSymbol = field[i][j];
+                if (fieldSymbol == SHIP_SYMBOL) {
+                    fieldSymbol = FOG_SYMBOL;
+                }
+                sb.append(fieldSymbol).append(" ");
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
 }
