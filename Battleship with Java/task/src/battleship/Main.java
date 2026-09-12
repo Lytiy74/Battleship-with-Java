@@ -35,22 +35,29 @@ public class Main {
         ShootResult shootResult;
         System.out.println(battlefield.toString(hideShips));
         System.out.println("Take a shot!\n");
+        do {
+            Coordinate cord = getCoordinate(scanner);
+            shootResult = battlefield.shoot(cord);
+            System.out.println(battlefield.toString(hideShips));
+            if (shootResult == ShootResult.MISS) {
+                System.out.println("You missed! Try again:");
+            } else if (shootResult == ShootResult.HIT) {
+                System.out.println("You hit a ship! Try again:");
+            } else if (shootResult == ShootResult.SUNK) {
+                System.out.println("You sank a ship! Specify a new target:");
+            } else {
+                System.out.println("You sank the last ship. You won. Congratulations!");
+            }
+        } while (shootResult != ShootResult.GAME_OVER);
+    }
+
+    private static Coordinate getCoordinate(Scanner scanner) {
         while (true) {
             try {
-                shootResult = battlefield.shoot(Coordinate.fromString(scanner.next()));
-                break;
+                return Coordinate.fromString(scanner.next());
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
         }
-        System.out.println(battlefield.toString(hideShips));
-        if (shootResult == ShootResult.MISS) {
-            System.out.println("You missed!");
-        } else {
-            System.out.println("You hit a ship!");
-        }
-
-        hideShips = false;
-        System.out.println(battlefield.toString(hideShips));
     }
 }

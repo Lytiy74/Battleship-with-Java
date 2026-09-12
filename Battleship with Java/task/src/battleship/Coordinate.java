@@ -1,5 +1,7 @@
 package battleship;
 
+import java.util.Objects;
+
 public class Coordinate {
     private final int row;
     private final int col;
@@ -25,6 +27,10 @@ public class Coordinate {
         return new Coordinate(row, col);
     }
 
+    public static Coordinate fromRowAndCol(int row, int col) {
+        return new Coordinate(row, col);
+    }
+
     public int getCol() {
         return col;
     }
@@ -35,5 +41,16 @@ public class Coordinate {
 
     public boolean isInBounds(int height, int width) {
         return row >= 0 && row < height && col >= 0 && col < width;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Coordinate that)) return false;
+        return row == that.row && col == that.col;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(row, col);
     }
 }

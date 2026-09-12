@@ -1,10 +1,13 @@
 package battleship;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class Battlefield {
 
     private final char[][] field;
+    private final List<Ship> ships;
     private final int height;
     private final int width;
     private static final char FOG_SYMBOL = '~';
@@ -21,6 +24,7 @@ public class Battlefield {
         this.height = height;
         this.width = width;
         this.field = new char[height][width];
+        this.ships = new ArrayList<>();
         initField();
     }
 
@@ -30,7 +34,7 @@ public class Battlefield {
         }
     }
 
-    public void placeShipOnField(String firstCord, String secondCord, ShipTypes ship) {
+    public void placeShipOnField(String firstCord, String secondCord, ShipTypes shipType) {
         Coordinate c1 = Coordinate.fromString(firstCord);
         Coordinate c2 = Coordinate.fromString(secondCord);
 
@@ -52,9 +56,9 @@ public class Battlefield {
 
         int actualLength = (endRow - startRow + endCol - startCol) + 1;
 
-        if (actualLength != ship.getSize()) {
+        if (actualLength != shipType.getSize()) {
             throw new IllegalArgumentException(
-                    String.format("Error! Wrong length of the %s! Try again:", ship.getName())
+                    String.format("Error! Wrong length of the %s! Try again:", shipType.getName())
             );
         }
 
@@ -68,11 +72,14 @@ public class Battlefield {
             }
         }
 
+        List<Coordinate> shipCoordinates = new ArrayList<>();
         for (int r = startRow; r <= endRow; r++) {
             for (int c = startCol; c <= endCol; c++) {
                 field[r][c] = SHIP_SYMBOL;
+                shipCoordinates.add(Coordinate.fromRowAndCol(r, c));
             }
         }
+        ships.add(new Ship(shipCoordinates, shipType));
     }
 
     private boolean hasAdjacentShip(int row, int col) {
@@ -97,38 +104,58 @@ public class Battlefield {
             throw new IllegalArgumentException("Error! You entered the wrong coordinates! Try again:");
         }
 
-        char cell = field[cord.getRow()][cord.getCol()];
-        if (cell == SHIP_SYMBOL || cell == HIT_SYMBOL) {
-            field[cord.getRow()][cord.getCol()] = HIT_SYMBOL;
-            return ShootResult.HIT;
-        } else {
-            field[cord.getRow()][cord.getCol()] = MISS_SYMBOL;
+
+        int row = cord.getRow();
+        int col = cord.getCol();
+        char cell = field[row][col];
+
+        if (cell == FOG_SYMBOL || cell == MISS_SYMBOL) {
+            field[row][col] = MISS_SYMBOL;
             return ShootResult.MISS;
         }
+
+        boolean wasIntact = cell == SHIP_SYMBOL;
+        field[row][col] = HIT_SYMBOL;
+
+        if (wasIntact) {
+            Ship hitShip = findShipAt(cord);
+            if (hitShip != null && isShipSunk(hitShip)) {
+                hitShip.setSunk(true);
+                if (allShipSunk()) {
+                    return ShootResult.GAME_OVER;
+                }
+                return ShootResult.SUNK;
+            }
+        }
+        return ShootResult.HIT;
+    }
+
+    private boolean isShipSunk(Ship hitShip) {
+        for (Coordinate coordinate : hitShip.getCoordinates()) {
+            if (field[coordinate.getRow()][coordinate.getCol()] == SHIP_SYMBOL) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean allShipSunk() {
+        for (Ship ship : ships) {
+            if (!ship.isSunk()) return false;
+        }
+        return true;
+    }
+
+    private Ship findShipAt(Coordinate cord) {
+        for (Ship ship : ships) {
+            if (ship.contains(cord)) return ship;
+        }
+        return null;
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(" ");
-
-        for (int i = 0; i < width; i++) {
-            sb.append(i + 1)
-                    .append(" ");
-        }
-
-        sb.append("\n");
-
-        for (int i = 0; i < height; i++) {
-            char letter = (char) ('A' + i);
-            sb.append(letter).append(" ");
-            for (int j = 0; j < width; j++) {
-                sb.append(field[i][j]).append(" ");
-            }
-            sb.append("\n");
-        }
-        return sb.toString();
+        return toString(false);
     }
 
     public String toString(boolean hideShips) {
