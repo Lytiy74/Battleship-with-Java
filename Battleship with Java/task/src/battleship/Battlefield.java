@@ -8,7 +8,7 @@ public class Battlefield {
     private final int height;
     private final int width;
     private static final char FOG_SYMBOL = '~';
-    private static final char PLAYER_SHIP_SYMBOL = 'O';
+    private static final char SHIP_SYMBOL = 'O';
 
 
     public Battlefield() {
@@ -28,14 +28,19 @@ public class Battlefield {
         }
     }
 
-    public void placeShipOnField(String firstCoord, String secondCoord) {
-        Coordinate c1 = new Coordinate(firstCoord);
-        Coordinate c2 = new Coordinate(secondCoord);
+    public void placeShipOnField(String firstCord, String secondCord, ShipTypes ship) {
+        Coordinate c1 = new Coordinate(firstCord);
+        Coordinate c2 = new Coordinate(secondCord);
 
-        if (!isValidCoordinates(c1, c2)) {
-            System.out.println("Error!");
-            return;
+
+        boolean isHorizontal = c1.getRow() == c2.getRow() && c1.getCol() != c2.getCol();
+        boolean isVertical = c1.getRow() != c2.getRow() && c1.getCol() == c2.getCol();
+
+        if ((!c1.isInBounds(height, width) || !c2.isInBounds(height, width))
+                || (!isHorizontal && !isVertical)) {
+            throw new IllegalArgumentException("Error! Wrong ship location! Try again:");
         }
+
 
         int startRow = Math.min(c1.getRow(), c2.getRow());
         int endRow = Math.max(c1.getRow(), c2.getRow());
@@ -43,26 +48,46 @@ public class Battlefield {
         int endCol = Math.max(c1.getCol(), c2.getCol());
 
 
-        int length = (endRow - startRow + endCol - startCol) + 1;
-        System.out.printf("Length: %d\n", length);
+        int actualLength = (endRow - startRow + endCol - startCol) + 1;
 
-        StringBuilder sb = new StringBuilder("Parts: ");
+        if (actualLength != ship.getSize()) {
+            throw new IllegalArgumentException(
+                    String.format("Error! Wrong length of the %s! Try again:", ship.getName())
+            );
+        }
+
         for (int r = startRow; r <= endRow; r++) {
-            char letter = (char) ('A' + r);
             for (int c = startCol; c <= endCol; c++) {
-                sb.append(letter).append(c+1).append(" ");
-                field[r][c] = PLAYER_SHIP_SYMBOL;
+                if (hasAdjacentShip(r, c)) {
+                    throw new IllegalArgumentException(
+                            "Error! You placed it too close to another one. Try again:"
+                    );
+                }
             }
         }
 
-        System.out.println(sb);
+        for (int r = startRow; r <= endRow; r++) {
+            for (int c = startCol; c <= endCol; c++) {
+                field[r][c] = SHIP_SYMBOL;
+            }
+        }
     }
 
-    private boolean isValidCoordinates(Coordinate c1, Coordinate c2) {
-        if (c1.getRow() < 0 || c1.getCol() < 0 || c2.getRow() < 0 || c2.getCol() < 0) return false;
-        if (c1.getRow() >= height || c1.getCol() >= width || c2.getRow() >= height || c2.getCol() >= width) return false;
-        if(!(c1.getRow() == c2.getRow() || c1.getCol() == c2.getCol())) return false;
-        return true;
+    private boolean hasAdjacentShip(int row, int col) {
+
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+                int checkRow = row + i;
+                int checkCol = col + j;
+
+                if (checkRow >= 0 && checkRow < height && checkCol >= 0 && checkCol < width
+                        && field[checkRow][checkCol] == SHIP_SYMBOL) return true;
+
+
+            }
+
+        }
+        return false;
     }
 
     @Override
