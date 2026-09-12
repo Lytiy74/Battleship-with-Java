@@ -29,8 +29,8 @@ public class Battlefield {
     }
 
     public void placeShipOnField(String firstCord, String secondCord, ShipTypes ship) {
-        Coordinate c1 = new Coordinate(firstCord);
-        Coordinate c2 = new Coordinate(secondCord);
+        Coordinate c1 = Coordinate.fromString(firstCord);
+        Coordinate c2 = Coordinate.fromString(secondCord);
 
 
         boolean isHorizontal = c1.getRow() == c2.getRow() && c1.getCol() != c2.getCol();

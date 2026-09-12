@@ -4,10 +4,25 @@ public class Coordinate {
     private final int row;
     private final int col;
 
-    public Coordinate(String coord) {
-        coord = coord.trim().toUpperCase();
-        this.row = coord.charAt(0) - 'A';
-        this.col = Integer.parseInt(coord.substring(1)) - 1;
+    private Coordinate(int row, int col) {
+        this.row = row;
+        this.col = col;
+    }
+
+    public static Coordinate fromString(String raw) {
+        if (raw == null) {
+            throw new IllegalArgumentException("Error! You entered the wrong coordinates! Try again:");
+        }
+
+        String cord = raw.trim().toUpperCase();
+
+        if (!cord.matches("^[A-Z]\\d+$")) {
+            throw new IllegalArgumentException("Error! You entered the wrong coordinates! Try again:");
+        }
+        int row = cord.charAt(0) - 'A';
+        int col = Integer.parseInt(cord.substring(1)) - 1;
+
+        return new Coordinate(row, col);
     }
 
     public int getCol() {
