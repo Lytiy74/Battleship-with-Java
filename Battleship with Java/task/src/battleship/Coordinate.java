@@ -17,4 +17,8 @@ public class Coordinate {
     public int getRow() {
         return row;
     }
+
+    public boolean isInBounds(int height, int width) {
+        return row >= 0 && row <= height && col >= 0 && col <= width;
+    }
 }
