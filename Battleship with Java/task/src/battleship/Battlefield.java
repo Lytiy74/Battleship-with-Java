@@ -159,7 +159,6 @@ public class Battlefield {
     }
 
     public String toString(boolean hideShips) {
-        if (!hideShips) return toString();
         StringBuilder sb = new StringBuilder();
 
         sb.append(" ");
@@ -176,7 +175,7 @@ public class Battlefield {
             sb.append(letter).append(" ");
             for (int j = 0; j < width; j++) {
                 char fieldSymbol = field[i][j];
-                if (fieldSymbol == SHIP_SYMBOL) {
+                if (hideShips && fieldSymbol == SHIP_SYMBOL) {
                     fieldSymbol = FOG_SYMBOL;
                 }
                 sb.append(fieldSymbol).append(" ");
