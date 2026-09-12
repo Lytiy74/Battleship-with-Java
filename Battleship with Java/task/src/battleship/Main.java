@@ -28,5 +28,25 @@ public class Main {
             }
         }
 
+        System.out.println("The game starts!\n");
+
+        ShootResult shootResult = ShootResult.MISS;
+        System.out.println(battlefield);
+        System.out.println("Take a shot!\n");
+        while (true) {
+            try {
+                shootResult = battlefield.shoot(Coordinate.fromString(scanner.next()));
+                break;
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }
+        System.out.println(battlefield);
+        if (shootResult == ShootResult.MISS) {
+            System.out.println("You missed!");
+        } else {
+            System.out.println("You hit a ship!");
+        }
+
     }
 }

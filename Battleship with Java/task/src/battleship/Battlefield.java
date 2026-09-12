@@ -9,6 +9,8 @@ public class Battlefield {
     private final int width;
     private static final char FOG_SYMBOL = '~';
     private static final char SHIP_SYMBOL = 'O';
+    private static final char HIT_SYMBOL = 'X';
+    private static final char MISS_SYMBOL = 'M';
 
 
     public Battlefield() {
@@ -88,6 +90,21 @@ public class Battlefield {
 
         }
         return false;
+    }
+
+    public ShootResult shoot(Coordinate cord) {
+        if (!cord.isInBounds(height, width)) {
+            throw new IllegalArgumentException("Error! You entered the wrong coordinates! Try again:");
+        }
+
+        char cell = field[cord.getRow()][cord.getCol()];
+        if (cell == SHIP_SYMBOL || cell == HIT_SYMBOL) {
+            field[cord.getRow()][cord.getCol()] = HIT_SYMBOL;
+            return ShootResult.HIT;
+        } else {
+            field[cord.getRow()][cord.getCol()] = MISS_SYMBOL;
+            return ShootResult.MISS;
+        }
     }
 
     @Override
